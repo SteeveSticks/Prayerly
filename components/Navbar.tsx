@@ -4,7 +4,7 @@ import React from "react";
 
 const Navbar = () => {
   return (
-    <nav className="flex items-center px-12 py-4">
+    <nav className="flex items-center px-14 py-3 bg-[#0D0D0D]">
       <div className="flex items-center justify-center gap-60">
         <Link href="/" className="flex items-center justify-center">
           <Image
@@ -19,22 +19,34 @@ const Navbar = () => {
 
         <ul className="flex space-x-4">
           <li>
-            <Link href="/" className="text-white hover:text-gray-300">
+            <Link
+              href="/"
+              className="text-white hover:text-gray-300 font-light"
+            >
               HOME
             </Link>
           </li>
           <li>
-            <Link href="/about" className="text-white hover:text-gray-300">
+            <Link
+              href="/about"
+              className="text-white hover:text-gray-300 font-light"
+            >
               ABOUT US
             </Link>
           </li>
           <li>
-            <Link href="/blog" className="text-white hover:text-gray-300">
+            <Link
+              href="/blog"
+              className="text-white hover:text-gray-300 font-light"
+            >
               BLOG
             </Link>
           </li>
           <li>
-            <Link href="/contact" className="text-white hover:text-gray-300">
+            <Link
+              href="/contact"
+              className="text-white hover:text-gray-300 font-light"
+            >
               CONTACT
             </Link>
           </li>
