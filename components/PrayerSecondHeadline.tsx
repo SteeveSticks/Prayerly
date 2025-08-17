@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { MoveRight } from "lucide-react";
 
 const PrayerSecondHeadline = () => {
   return (
@@ -35,6 +36,26 @@ const PrayerSecondHeadline = () => {
         <img src="/images/prayerImage.png" alt="Prayer Community Image" />
         <img src="/images/prayerBible.png" alt="Prayer Community Image" />
         <img src="/images/CommunityPrayer.png" alt="Prayer Community Image" />
+      </div>
+
+      <div className="flex flex-col items-center justify-center text-center text-white pt-20 space-y-4">
+        <p className="text-xs mb-2">OUR MISSING & VISION</p>
+        <h2 className="text-2xl font-semibold">CELEBRATE WITH US</h2>
+        <p className="text-[15px] text-gray-200 text-wrap max-w-2xl">
+          We are a community of believers who come together to share prayers,
+          stories, and inspiration. Our mission is to uplift and support each
+          other through the power of prayer.
+        </p>
+
+        <Link
+          href="/sign-up"
+          className="text-[#FFD2A4] hover:text-[#FFB07C] transition-all"
+        >
+          <span className="flex items-center justify-center cursor-pointer">
+            Sign up
+            <MoveRight className="size-6 ml-2" />
+          </span>
+        </Link>
       </div>
     </article>
   );

@@ -3,9 +3,24 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+@theme {
+  --font-sans: var(--font-inter);
+}
 
 body {
   font-family: var(--font-inter);
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  animation: slime 45s ease infinite;
+  -webkit-animation: slime 45s ease infinite;
+  background-clip: text;
+}
+
+html {
+  scrollbar-color: rgb(0, 0, 0, 0.4) rgb(0, 0, 0, 0);
+  scrollbar-width: thin;
+  scroll-behavior: smooth;
 }
 
 @theme inline {

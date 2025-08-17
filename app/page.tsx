@@ -1,3 +1,6 @@
+import PrayerBackground from "@/components/PrayerBackground";
+import PrayerBenefits from "@/components/PrayerBenefits";
+import PrayerExample from "@/components/PrayerExample";
 import PrayerlyHero from "@/components/PrayerlyHero";
 import PrayerSecondHeadline from "@/components/PrayerSecondHeadline";
 import PrayerSubHeadline from "@/components/PrayerSubHeadline";
@@ -8,6 +11,9 @@ const page = () => {
       <PrayerlyHero />
       <PrayerSubHeadline />
       <PrayerSecondHeadline />
+      <PrayerBenefits />
+      <PrayerExample />
+      <PrayerBackground />
     </main>
   );
 };
