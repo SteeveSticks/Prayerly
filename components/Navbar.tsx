@@ -1,3 +1,5 @@
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { Sign } from "crypto";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -19,17 +21,14 @@ const Navbar = () => {
 
         <ul className="flex space-x-4">
           <li>
-            <Link
-              href="/"
-              className="text-white hover:text-gray-300 font-light"
-            >
+            <Link href="/" className="text-white hover:text-gray-300 font-thin">
               HOME
             </Link>
           </li>
           <li>
             <Link
               href="/about"
-              className="text-white hover:text-gray-300 font-light"
+              className="text-white hover:text-gray-300 font-thin"
             >
               ABOUT US
             </Link>
@@ -37,7 +36,7 @@ const Navbar = () => {
           <li>
             <Link
               href="/blog"
-              className="text-white hover:text-gray-300 font-light"
+              className="text-white hover:text-gray-300 font-thin"
             >
               BLOG
             </Link>
@@ -45,7 +44,7 @@ const Navbar = () => {
           <li>
             <Link
               href="/contact"
-              className="text-white hover:text-gray-300 font-light"
+              className="text-white hover:text-gray-300 font-thin"
             >
               CONTACT
             </Link>
@@ -54,12 +53,18 @@ const Navbar = () => {
       </div>
 
       <div className="ml-auto">
-        <Link
-          href="/login"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Login
-        </Link>
+        <div>
+          <SignedOut>
+            <SignInButton>
+              <button className="bg-[#FFD2A4] text-[#161722] hover:bg-[#FFB07C] cursor-pointer px-4 py-2 rounded-md font-medium">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+        </div>
       </div>
     </nav>
   );
