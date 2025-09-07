@@ -1,4 +1,10 @@
-import { Radio, BriefcaseBusiness, HandHeart } from "lucide-react";
+import {
+  Radio,
+  BriefcaseBusiness,
+  HandHeart,
+  Badge,
+  BadgeCheck,
+} from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -14,7 +20,10 @@ const PrayerSubHeadline = () => {
 
       <div className="flex items-center justify-center gap-3 px-14 py-10 text-white">
         <div className="p-10 bg-gray-900 space-y-4">
-          <HandHeart className="bg-[#FFD2A4] p-2 rounded-full size-9" />
+          <div className="flex items-center justify-start space-x-4">
+            <HandHeart className="bg-[#FFD2A4] p-2 rounded-full size-9" />
+            <BadgeCheck className="text-[#FFF5EB] p-2 rounded-full size-20 relative left-62 bottom-5" />
+          </div>
 
           <h2 className="font-semibold">ABOUT US</h2>
           <p className="text-[15px] text-gray-200">
@@ -25,7 +34,10 @@ const PrayerSubHeadline = () => {
         </div>
 
         <div className="p-10 bg-gray-900 space-y-4">
-          <BriefcaseBusiness className="bg-[#FFD2A4] p-2 rounded-full size-9" />
+          <div className="flex items-center justify-start space-x-4">
+            <BriefcaseBusiness className="bg-[#FFD2A4] p-2 rounded-full size-9" />
+            <BadgeCheck className="text-[#FFF5EB] p-2 rounded-full size-20 relative left-40 bottom-5" />
+          </div>
 
           <h2 className="font-semibold">OUR MISSION</h2>
           <p className="text-[15px] text-gray-200">
@@ -35,7 +47,10 @@ const PrayerSubHeadline = () => {
         </div>
 
         <div className="p-10 bg-gray-900 space-y-4">
-          <Radio className="bg-[#FFD2A4] p-2 rounded-full size-9" />
+          <div className="flex items-center justify-start space-x-4">
+            <Radio className="bg-[#FFD2A4] p-2 rounded-full size-9" />
+            <BadgeCheck className="text-[#FFF5EB] p-2 rounded-full size-20 relative left-50 bottom-5" />
+          </div>
 
           <h2 className="font-semibold">GETING INVOLVED</h2>
           <p className="text-[15px] text-gray-200">
