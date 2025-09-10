@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar";
 import PrayerBackground from "@/components/PrayerBackground";
 import PrayerBenefits from "@/components/PrayerBenefits";
 import PrayerExample from "@/components/PrayerExample";
@@ -10,6 +11,7 @@ import PrayerTestimonial from "@/components/PrayerTestimonial";
 const page = () => {
   return (
     <main className="min-h-screen">
+      <Navbar />
       <PrayerlyHero />
       <PrayerSubHeadline />
       <PrayerSecondHeadline />

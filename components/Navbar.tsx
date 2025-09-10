@@ -1,8 +1,8 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Sign } from "crypto";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { redirect } from "next/navigation";
 
 const Navbar = () => {
   return (
@@ -55,7 +55,7 @@ const Navbar = () => {
       <div className="ml-auto">
         <div>
           <SignedOut>
-            <SignInButton>
+            <SignInButton forceRedirectUrl={"/home"}>
               <button className="bg-[#FFD2A4] text-[#161722] hover:bg-[#FFB07C] cursor-pointer px-4 py-2 rounded-md font-medium">
                 Sign In
               </button>
