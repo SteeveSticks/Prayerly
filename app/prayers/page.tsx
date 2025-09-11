@@ -31,6 +31,8 @@ const Page = () => {
       router.push("/home");
     } else if (tab === "prayers") {
       router.push("/prayers");
+    } else if (tab === "loved-ones") {
+      router.push("/loved-ones");
     }
   };
 
@@ -38,6 +40,8 @@ const Page = () => {
     switch (activeTab) {
       case "home":
         return <Dashboard onCreatePrayer={handleCreatePrayer} />;
+      case "prayer":
+      // return <MyPrayer />
       case "loved-ones":
       // return <LovedOnes />;
       case "notifications":

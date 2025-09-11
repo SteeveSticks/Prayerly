@@ -26,7 +26,7 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
   // }, [])
 
   return (
-    <div className="pb-20 px-10 max-w-md mx-auto">
+    <div className="pb-20 px-4 max-w-md mx-auto">
       {/* Daily Verse */}
       <Card className="mb-6 mt-4">
         <CardContent className="px-4">
