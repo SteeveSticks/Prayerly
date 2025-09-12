@@ -2,7 +2,8 @@
 
 import BottomNavigation from "@/components/BottomNavigation";
 import Dashboard from "@/components/Dashboard";
-import MyPrayers from "@/components/MyPrayers";
+import LovedOnes from "@/components/LovedOnes";
+import Notification from "@/components/Notification";
 import { Toaster } from "@/components/ui/sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,15 +15,6 @@ const Page = () => {
 
   const handleCreatePrayer = () => {
     setShowPrayerCreation(true);
-  };
-
-  const handleSavePrayer = (prayer: {
-    title: string;
-    content: string;
-    privacy: string;
-  }) => {
-    // Prayer is alredy saved by the prayer creation component
-    console.log("Prayer saved:", prayer);
   };
 
   const handleTabChange = (tab: string) => {
@@ -42,15 +34,16 @@ const Page = () => {
     switch (activeTab) {
       case "home":
         return <Dashboard onCreatePrayer={handleCreatePrayer} />;
-      case "prayers":
+      case "prayer":
+      // return <MyPrayer />
       case "loved-ones":
       // return <LovedOnes />;
       case "notifications":
       // return <Notifications />;
       case "profile":
       // return <Profile />;
-      default:
-        return <Dashboard onCreatePrayer={handleCreatePrayer} />;
+      // default:
+      //   return <Dashboard onCreatePrayer={handleCreatePrayer} />;
     }
   };
 
@@ -65,7 +58,7 @@ const Page = () => {
 
       {/* Main content */}
       <main className="relative">
-        <Dashboard onCreatePrayer={handleCreatePrayer} />
+        <Notification />
       </main>
 
       {/* Bottom navigation */}

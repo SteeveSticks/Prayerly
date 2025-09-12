@@ -25,6 +25,8 @@ const Page = () => {
       router.push("/prayers");
     } else if (tab === "loved-ones") {
       router.push("/loved-ones");
+    } else if (tab === "notifications") {
+      router.push("/notifications");
     }
   };
 
