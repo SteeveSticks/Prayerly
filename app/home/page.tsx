@@ -3,6 +3,7 @@
 import BottomNavigation from "@/components/BottomNavigation";
 import Dashboard from "@/components/Dashboard";
 import MyPrayers from "@/components/MyPrayers";
+import PrayerCreation from "@/components/PrayerCreation";
 import { Toaster } from "@/components/ui/sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -69,6 +70,14 @@ const Page = () => {
       <main className="relative">
         <Dashboard onCreatePrayer={handleCreatePrayer} />
       </main>
+
+      {/* Prayer Creation Modal */}
+      {showPrayerCreation && (
+        <PrayerCreation
+          onClose={() => setShowPrayerCreation(false)}
+          onSave={handleSavePrayer}
+        />
+      )}
 
       {/* Bottom navigation */}
       <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
