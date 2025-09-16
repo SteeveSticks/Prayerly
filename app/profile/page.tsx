@@ -3,6 +3,7 @@
 import BottomNavigation from "@/components/BottomNavigation";
 import Dashboard from "@/components/Dashboard";
 import MyPrayers from "@/components/MyPrayers";
+import Profile from "@/components/Profile";
 import { Toaster } from "@/components/ui/sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -68,7 +69,7 @@ const Page = () => {
 
       {/* Main content */}
       <main className="relative">
-        <MyPrayers />
+        <Profile />
       </main>
 
       {/* Bottom navigation */}

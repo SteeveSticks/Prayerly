@@ -35,6 +35,8 @@ const Page = () => {
       router.push("/loved-ones");
     } else if (tab === "notifications") {
       router.push("/notifications");
+    } else if (tab === "profile") {
+      router.push("/profile");
     }
   };
 
