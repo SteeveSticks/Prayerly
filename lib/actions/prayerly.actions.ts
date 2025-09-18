@@ -45,3 +45,18 @@ export const getAllPrayers = async () => {
 
   return prayers;
 };
+
+export const getUserPrayers = async (userId: string) => {
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("prayer")
+    .select()
+    .eq("author", userId);
+
+  if (error) {
+    throw new Error(error?.message || "Failed to ge prayers");
+  }
+
+  return data;
+};

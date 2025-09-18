@@ -161,8 +161,7 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
                     </Button>
                   </div>
                   <div className="text-xs text-muted-foreground mt-2">
-                    {/* {formatTimeAgo(item.createdAt)} */}
-                    time ago
+                    {formatTimeAgo(item.created_at)}
                   </div>
                 </CardContent>
               </Card>

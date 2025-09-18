@@ -5,25 +5,28 @@ import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Edit, Trash2 } from "lucide-react";
+import { getUserPrayers } from "@/lib/actions/prayerly.actions";
+import { useUser } from "@clerk/nextjs";
 
 const MyPrayers = () => {
+  const user = useUser();
   const [prayers, setPrayers] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   loadPrayers()
-  // })
+  useEffect(() => {
+    loadPrayers();
+  }, []);
 
   const loadPrayers = async () => {
+    if (!user.user?.id) {
+      console.error("User ID is undefined");
+      return;
+    }
     try {
-      const [prayersData, profileData] = await Promise.all([
-        api.getMyPrayers(),
-        api.getProfile(),
-      ]);
-
-      setPrayers(prayersData || []);
-      setProfile(profileData.profile);
+      const prayersData = await getUserPrayers(user.user.id);
+      setPrayers(prayersData);
+      // setProfile(profileData.profile);
     } catch (error) {
       console.error("Failed to load prayer:", error);
     } finally {
@@ -78,10 +81,10 @@ const MyPrayers = () => {
           ) : (
             prayers.map((prayer) => (
               <Card key={prayer.id}>
-                <CardContent className="p-4">
+                <CardContent className="">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-muted-foreground text-sm">
-                      {formatDate(prayer.createdAt)}
+                      {formatDate(prayer.created_at)}
                     </div>
                     <Badge variant="outline" className="text-xs">
                       {getPrivacyLabel(prayer.privacy)}
