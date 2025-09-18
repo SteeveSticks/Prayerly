@@ -16,7 +16,7 @@ export const createPrayer = async (prayer: CreatePrayer) => {
   const supabase = createSupabaseClient();
 
   const { data, error } = await supabase
-    .from("prayers")
+    .from("prayer")
     .insert({
       author,
       title: prayer.title,
@@ -32,4 +32,16 @@ export const createPrayer = async (prayer: CreatePrayer) => {
   console.log(data);
 
   return data[0]; // return the newly created prayer
+};
+
+export const getAllPrayers = async () => {
+  const supabase = createSupabaseClient();
+
+  const { data: prayers, error } = await supabase.from("prayer").select();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to get prayers");
+  }
+
+  return prayers;
 };

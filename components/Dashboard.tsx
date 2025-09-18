@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import {
@@ -11,19 +11,46 @@ import {
   PenTool,
   Users,
 } from "lucide-react";
+import { getAllPrayers } from "@/lib/actions/prayerly.actions";
+import { useUser } from "@clerk/nextjs";
 
 interface DashboardProps {
   onCreatePrayer: () => void;
 }
 
 const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
+  const user = useUser();
   const [dailyVerse, setDailyVerse] = useState("");
   const [prayerFeed, setPrayerFeed] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   loadDashboardData()
-  // }, [])
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      const prayers = await getAllPrayers();
+      setPrayerFeed(prayers);
+      console.log(prayers);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) return `${diffDays}d ago`;
+    if (diffHours > 0) return `${diffHours}h ago`;
+    return "Just now";
+  };
 
   return (
     <div className="pb-20 px-4 max-w-md mx-auto">
@@ -80,7 +107,7 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
       <div>
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg">🕊️</span>
-          <h3>Feed (Loved Ones&apos; Prayers)</h3>
+          <h3>Feed (🌍 Community Prayers)</h3>
         </div>
 
         <div className="space-y-4">
@@ -98,10 +125,10 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
           ) : (
             prayerFeed.map((item) => (
               <Card key={item.id}>
-                <CardContent className="p-4">
+                <CardContent className="">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-primary">
-                      {item.author?.name || "Unknown"}
+                      {user.user?.firstName || "Unknown"}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       ({item.author?.relationship || "Community"})
