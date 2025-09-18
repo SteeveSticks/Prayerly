@@ -1,0 +1,35 @@
+"use server";
+
+import { auth } from "@clerk/nextjs/server";
+import { createSupabaseClient } from "../supabase";
+
+type CreatePrayer = {
+  title: string;
+  content: string;
+  privacy: string;
+};
+
+export const createPrayer = async (prayer: CreatePrayer) => {
+  const { userId: author } = await auth();
+  if (!author) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("prayers")
+    .insert({
+      author,
+      title: prayer.title,
+      content: prayer.content,
+      privacy: prayer.privacy,
+    })
+    .select();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to create prayer");
+  }
+
+  console.log(data);
+
+  return data[0]; // return the newly created prayer
+};

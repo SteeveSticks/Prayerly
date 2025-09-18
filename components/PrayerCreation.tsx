@@ -6,6 +6,8 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { createPrayer } from "@/lib/actions/prayerly.actions";
+import { useRouter } from "next/navigation";
 
 interface PrayerCreationProps {
   onClose: () => void;
@@ -13,6 +15,7 @@ interface PrayerCreationProps {
 }
 
 const PrayerCreation = ({ onClose, onSave }: PrayerCreationProps) => {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [privacy, setPrivacy] = useState("private");
@@ -22,7 +25,15 @@ const PrayerCreation = ({ onClose, onSave }: PrayerCreationProps) => {
     if (title.trim() && content.trim()) {
       setLoading(true);
       try {
+        const prayer = await createPrayer({ title, content, privacy });
         onSave({ title, content, privacy });
+
+        if (prayer) {
+          router.push("/home");
+        } else {
+          console.log("Failed to create a prayer");
+          router.push("/home");
+        }
         onClose();
       } catch (error) {
         console.error("Failed to save prayer", error);
