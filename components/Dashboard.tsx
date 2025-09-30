@@ -29,6 +29,23 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
     loadDashboardData();
   }, []);
 
+  const bibleRefs = [
+    "John 3:16",
+    "Romans 8:28",
+    "Psalm 23:1",
+    "Philippians 4:13",
+    "Isaiah 41:10",
+  ];
+
+  const getRandomVerse = async () => {
+    const randomRef = bibleRefs[Math.floor(Math.random() * bibleRefs.length)];
+    const res = await fetch(
+      `https://bible-api.com/${encodeURIComponent(randomRef)}`
+    );
+    const data = await res.json();
+    setDailyVerse(`${data.reference} - ${data.text}`);
+  };
+
   const loadDashboardData = async () => {
     try {
       const prayers = await getAllPrayers();
@@ -65,7 +82,7 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
           <p className="text-muted-foreground mb-3">
             {loading ? "Loading verse..." : dailyVerse}
           </p>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={getRandomVerse}>
             Reflect
           </Button>
         </CardContent>
@@ -136,7 +153,7 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
             </div>
           ) : prayerFeed.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p>No prayer from loved ones yet.</p>
+              <p>No prayer from community and loved ones yet.</p>
               <p className="text-sm mt-2">
                 Add some loved ones to see their prayers here.
               </p>
@@ -147,7 +164,7 @@ const Dashboard = ({ onCreatePrayer }: DashboardProps) => {
                 <CardContent className="">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-primary">
-                      {user.user?.firstName || "Unknown"}
+                      {user.user?.fullName || "Unknown"}
                     </span>
                     <span className="text-sm text-muted-foreground">
                       ({item.author?.relationship || "Community"})

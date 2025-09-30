@@ -107,3 +107,18 @@ export const getPrayerStreak = async (userId: string) => {
 
   return streak;
 };
+
+export const addLovedOne = async (email: string) => {
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("loved_ones")
+    .insert({ email })
+    .select();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to add loved one");
+  }
+
+  return data[0];
+};

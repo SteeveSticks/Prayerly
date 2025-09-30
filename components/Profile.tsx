@@ -121,13 +121,15 @@ const Profile = () => {
         </div>
 
         {/* Sign out */}
-        <Button
-          variant="outline"
-          className="w-full cursor-pointer text-destructive border-destructive/20"
-        >
-          <LogOut size={16} className="mr-2" />
-          <SignOutButton />
-        </Button>
+        <SignOutButton>
+          <Button
+            variant="outline"
+            className="w-full cursor-pointer text-destructive border-destructive/20"
+          >
+            <LogOut size={16} className="mr-2" />
+            Sign Out
+          </Button>
+        </SignOutButton>
 
         {/* App Info */}
         <div className="text-center mt-6 text-muted-foreground text-sm">
