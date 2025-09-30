@@ -34,6 +34,17 @@ export const createPrayer = async (prayer: CreatePrayer) => {
   return data[0]; // return the newly created prayer
 };
 
+export const getPrayer = async (id: string) => {
+  const supabase = createSupabaseClient();
+
+  // Fetching a single prayer by ID
+  const { data, error } = await supabase.from("prayer").select().eq("id", id);
+
+  if (error) return console.log(error);
+
+  return data[0];
+};
+
 export const getAllPrayers = async () => {
   const supabase = createSupabaseClient();
 
