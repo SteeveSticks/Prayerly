@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,17 +23,17 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${inter.variable} antialiased`}>
-          <div className="min-h-screen w-full relative bg-black">
-            <div
-              className="absolute inset-0 z-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 80, 120, 0.25), transparent 70%), #000000",
-              }}
-            />
+          <div className="min-h-screen w-full relative bg-white dark:bg-black">
+            <div className="absolute inset-0 z-0 bg-gradient-to-br from-pink-100/20 via-transparent to-purple-100/20 dark:from-pink-900/10 dark:via-transparent dark:to-purple-900/10" />
             <div className="relative z-10">
               {/* <Navbar /> */}
-              {children}
+              <ThemeProvider
+                attribute="class"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
             </div>
           </div>
         </body>

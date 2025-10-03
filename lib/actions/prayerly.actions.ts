@@ -133,3 +133,89 @@ export const addLovedOne = async (email: string) => {
 
   return data[0];
 };
+
+// Replies (community chat under a prayer)
+type CreateReply = {
+  prayerId: string;
+  content: string;
+};
+
+export type PrayerReply = {
+  id: string;
+  prayer_id: string;
+  author: string;
+  content: string;
+  created_at: string;
+  updated_at: string | null;
+};
+
+export const listReplies = async (prayerId: string): Promise<PrayerReply[]> => {
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("prayer_reply")
+    .select()
+    .eq("prayer_id", prayerId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw new Error(error?.message || "Failed to get replies");
+  }
+
+  return (data as unknown as PrayerReply[]) || [];
+};
+
+export const createReply = async ({ prayerId, content }: CreateReply) => {
+  const { userId: author } = await auth();
+  if (!author) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from("prayer_reply")
+    .insert({ prayer_id: prayerId, author, content })
+    .select();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to create reply");
+  }
+
+  return data?.[0] as PrayerReply;
+};
+
+export const updateReply = async (replyId: string, content: string) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+  // Ensure only author can update
+  const { data, error } = await supabase
+    .from("prayer_reply")
+    .update({ content })
+    .eq("id", replyId)
+    .eq("author", userId)
+    .select();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to update reply");
+  }
+
+  return data?.[0] as PrayerReply;
+};
+
+export const deleteReply = async (replyId: string) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+  const { error } = await supabase
+    .from("prayer_reply")
+    .delete()
+    .eq("id", replyId)
+    .eq("author", userId);
+
+  if (error) {
+    throw new Error(error?.message || "Failed to delete reply");
+  }
+
+  return { success: true } as const;
+};

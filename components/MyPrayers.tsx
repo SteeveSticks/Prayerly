@@ -21,12 +21,14 @@ const MyPrayers = () => {
   useEffect(() => {
     setLoading(true);
     loadPrayers();
-    getPrayerStreakValue();
+    if (user.user?.id) {
+      getPrayerStreakValue(user.user.id);
+    }
   }, []);
 
-  const getPrayerStreakValue = async () => {
+  const getPrayerStreakValue = async (userId: string) => {
     try {
-      const streak = await getPrayerStreak(user.user?.id);
+      const streak = await getPrayerStreak(userId);
       setPrayerStreak(streak);
     } catch (error) {
       console.error("Failed to get prayer streak:", error);

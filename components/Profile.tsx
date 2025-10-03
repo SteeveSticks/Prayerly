@@ -6,26 +6,35 @@ import { Avatar } from "./ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Profile = () => {
   const user = useUser();
+  const { setTheme } = useTheme();
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    loadProfile();
+    // loadProfile();
   }, []);
 
-  const loadProfile = async () => {
-    try {
-      const data = await fetch("/api/profile");
-      setProfile(await data.json());
-    } catch (error) {
-      console.error("Failed to load profile", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const loadProfile = async () => {
+  //   try {
+  //     const data = await fetch("/api/profile");
+  //     setProfile(await data.json());
+  //   } catch (error) {
+  //     console.error("Failed to load profile", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Handle signout
 
@@ -72,7 +81,7 @@ const Profile = () => {
               </div>
             ) : (
               <>
-                <Avatar className="mx-auto items-center mb-4 bg-gray-200 h-20 w-20 text-center justify-center">
+                <Avatar className="mx-auto items-center mb-4 bg-gray-200 dark:bg-gray-800 h-20 w-20 text-center justify-center">
                   <AvatarFallback className="text-xl">
                     {getInitials(user.user?.fullName || "User")}
                   </AvatarFallback>
@@ -103,13 +112,13 @@ const Profile = () => {
         </div>
 
         {/* Menu Items */}
-        <div className="space-y-2 mb-6">
+        <div className="space-y-2 mb-2">
           {menuItems.map((item, index) => (
             <Card
               key={index}
               className="cursor-pointer hover:bg-muted/50 transition-colors"
             >
-              <CardContent className="p-1 px-5">
+              <CardContent className="px-5">
                 <div className="flex items-center gap-3">
                   <div className="text-muted-foreground">{item.icon}</div>
                   <span className="flex-1">{item.label}</span>
@@ -119,6 +128,38 @@ const Profile = () => {
             </Card>
           ))}
         </div>
+
+        {/* DarkMode */}
+        <Card className="hover:bg-muted/50 transition-colors mb-6">
+          <CardContent className="px-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p>Toggle Theme</p>
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="cursor-pointert">
+                  <Button variant="outline" size="icon">
+                    <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                    <span className="sr-only">Toggle theme</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setTheme("light")}>
+                    Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("dark")}>
+                    Dark
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("system")}>
+                    System
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Sign out */}
         <SignOutButton>

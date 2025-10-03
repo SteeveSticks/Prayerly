@@ -19,7 +19,7 @@ const BottomNavigation = ({
     { id: "profile", icon: Settings, label: "Profile" },
   ];
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border">
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border">
       <div className="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
         {tabs.map(({ id, icon: Icon, label }) => (
           <button

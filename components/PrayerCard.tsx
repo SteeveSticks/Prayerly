@@ -43,7 +43,7 @@ const PrayerCard = ({
             <span className="text-sm text-muted-foreground">
               ({"Community"})
             </span>
-            <span className="text-lg ml-auto">🙏</span>
+            <span className="text-lg ml-auto">✨</span>
           </div>
           <h4 className="text-sm mb-1">{title}</h4>
           <p className="text-sm mb-3 text-muted-foreground">

@@ -2,7 +2,6 @@
 
 import BottomNavigation from "@/components/BottomNavigation";
 import Dashboard from "@/components/Dashboard";
-import MyPrayers from "@/components/MyPrayers";
 import PrayerCreation from "@/components/PrayerCreation";
 import { Toaster } from "@/components/ui/sonner";
 import { useRouter } from "next/navigation";
@@ -58,9 +57,9 @@ const Page = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="flex items-center justify-center sticky top-0 bg-white border-b border-border z-40">
+      <div className="flex items-center justify-center sticky top-0 bg-background border-b border-border z-40">
         <div className="flex items-center justify-center py-4 px-4 max-w-md max-auto">
           <h1 className="text-xl text-primary">🙏 Prayerly</h1>
         </div>

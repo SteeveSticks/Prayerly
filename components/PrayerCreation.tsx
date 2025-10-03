@@ -44,10 +44,15 @@ const PrayerCreation = ({ onClose, onSave }: PrayerCreationProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col max-w-md mx-auto">
+    <div className="fixed inset-0 bg-background z-50 flex flex-col max-w-md mx-auto">
       <div className="flex items-center justify-between p-4 border-b">
         <h2 className="text-lg">✍️ Write Your Prayer</h2>
-        <Button variant="ghost" size="sm" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onClose}
+          className="cursor-pointer dark:hover:bg-gray-600 dark:hover:text-gray-400"
+        >
           <X size={20} />
         </Button>
       </div>
