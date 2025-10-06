@@ -13,6 +13,8 @@ import {
 } from "@/lib/actions/prayerly.actions";
 import { createClientSupabase } from "@/lib/supabase-client";
 import { useUser } from "@clerk/nextjs";
+import { Input } from "./ui/input";
+import { toast } from "sonner";
 
 interface PrayerCardProps {
   id: string;
@@ -30,6 +32,7 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
   const [optimisticReplies, setOptimisticReplies] = useState<PrayerReply[]>([]);
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -89,11 +92,11 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
   }, [id]);
 
   const handleSend = async () => {
-    if (!newMessage.trim() || isLoading) return;
+    if (!newMessage.trim() || isReplying) return;
 
     const messageContent = newMessage.trim();
     setNewMessage("");
-    setIsLoading(true);
+    setIsReplying(true);
 
     // Optimistic update
     const tempReply: PrayerReply = {
@@ -116,7 +119,7 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
       setOptimisticReplies((prev) => prev.filter((r) => r.id !== tempReply.id));
       setNewMessage(messageContent); // Restore message
     } finally {
-      setIsLoading(false);
+      setIsReplying(false);
     }
   };
 
@@ -164,6 +167,8 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
     try {
       await deleteReply(replyId);
       await loadReplies(); // Refresh to get real data
+
+      toast.success("Reply deleted");
     } catch (e) {
       console.error(e);
       // Revert optimistic update on error
@@ -240,47 +245,75 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
           e.preventDefault();
           handleSend();
         }}
-        className="flex flex-col sm:flex-row p-4 border-t-[1px] border-border pb-20 px-4 max-w-md mx-auto"
+        className="flex flex-col sm:flex-row p-4 gap-2 border-t-[1px] border-border pb-10 px-4 max-w-md mx-auto"
       >
-        <input
+        <Input
           type="text"
           placeholder="Type a message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          disabled={isLoading}
+          disabled={isReplying}
           className="w-full bg-[#00000040] dark:bg-[#ffffff14] rounded-lg px-3 py-2"
         />
         <Button
           type="submit"
-          disabled={!newMessage.trim() || isLoading}
+          disabled={!newMessage.trim() || isReplying}
           className="mt-4 sm:mt-0 sm:ml-0 text-white max-h-12"
         >
-          {isLoading ? "Sending..." : "Send"}
+          {isReplying ? "Replying..." : "Reply"}
         </Button>
       </form>
 
       {/* Main chat */}
-      <div
-        ref={listRef}
-        className="max-w-md mx-auto px-4 space-y-3 py-4 overflow-y-auto max-h-[50vh]"
-      >
+      <div ref={listRef} className="max-w-md mx-auto px-4 space-y-5 pb-22">
         {optimisticReplies.map((r) => (
-          <div key={r.id} className="flex items-start gap-2">
-            <Avatar>
-              <AvatarImage
-                src={user?.imageUrl || undefined}
-                alt={user?.fullName || "User"}
-              />
-              <AvatarFallback>
-                {(user?.fullName || "U").slice(0, 1)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="text-xs text-muted-foreground">
-                {formatTimeAgo(r.created_at)}
+          <div key={r.id} className="grid">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Avatar>
+                  <AvatarImage
+                    src={user?.imageUrl || undefined}
+                    alt={user?.fullName || "User"}
+                  />
+                  <AvatarFallback>
+                    {(user?.fullName || "U").slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm text-muted-foreground">
+                  {user?.fullName || "Unknown"}
+                </span>
+                <div className="text-xs text-muted-foreground">
+                  {formatTimeAgo(r.created_at)}
+                </div>
               </div>
+
+              {canEditOrDelete(r) && editingId !== r.id && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => beginEdit(r)}
+                    disabled={isLoading}
+                    className="cursor-pointer"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => removeReply(r.id)}
+                    disabled={isLoading}
+                    className="cursor-pointer"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1">
               {editingId === r.id ? (
-                <div className="mt-1">
+                <div className="mt-1 ml-10">
                   <input
                     value={editingContent}
                     onChange={(e) => setEditingContent(e.target.value)}
@@ -307,31 +340,9 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
                   </div>
                 </div>
               ) : (
-                <div className="mt-1">{r.content}</div>
+                <div className="mt-1 ml-10">{r.content}</div>
               )}
             </div>
-            {canEditOrDelete(r) && editingId !== r.id && (
-              <div className="flex items-center gap-2">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => beginEdit(r)}
-                  disabled={isLoading}
-                  className="cursor-pointer"
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => removeReply(r.id)}
-                  disabled={isLoading}
-                  className="cursor-pointer"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </div>
-            )}
           </div>
         ))}
       </div>

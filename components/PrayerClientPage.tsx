@@ -60,9 +60,9 @@ const PrayerClientPage = ({ prayer }: PrayerClientPageProps) => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-background min-h-screen overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-center sticky top-0 bg-white border-b border-border z-40">
+      <div className="flex items-center justify-center sticky top-0 bg-backgound border-b border-border z-40">
         <div className="flex items-center justify-center py-4 px-4 max-w-md max-auto">
           <h1 className="text-xl text-primary">🙏 Prayerly</h1>
         </div>
