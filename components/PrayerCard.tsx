@@ -115,23 +115,23 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
         <div className="flex items-center justify-between max-w-md ml-13">
           <Link href={`/prayer/${id}`}>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="h-8 px-3 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+              className="h-8 px-3 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
             >
               <MessageCircle size={16} className="mr-2" />
-              <span className="text-sm">Pray</span>
+              <span className="text-sm">Let&apos;s Pray</span>
             </Button>
           </Link>
 
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={handleLike}
             disabled={isLiking}
-            className={`h-8 px-3 ${
+            className={`h-8 px-3 cursor-pointer ${
               isLiked
-                ? "text-red-600 hover:bg-red-100 dark:hover:bg-red-900/20"
+                ? "text-red-600 hover:text-red-600"
                 : "hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
             }`}
           >
