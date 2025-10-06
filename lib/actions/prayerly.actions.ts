@@ -219,3 +219,91 @@ export const deleteReply = async (replyId: string) => {
 
   return { success: true } as const;
 };
+
+// Prayer Likes/Encouragements
+export type PrayerLike = {
+  id: string;
+  prayer_id: string;
+  user_id: string;
+  created_at: string;
+};
+
+export const getPrayerLikes = async (prayerId: string): Promise<number> => {
+  const supabase = createSupabaseClient();
+
+  const { count, error } = await supabase
+    .from("prayer_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("prayer_id", prayerId);
+
+  if (error) {
+    throw new Error(error?.message || "Failed to get prayer likes");
+  }
+
+  return count || 0;
+};
+
+export const getUserLikedPrayer = async (
+  prayerId: string
+): Promise<boolean> => {
+  const { userId } = await auth();
+  if (!userId) return false;
+
+  const supabase = createSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("prayer_likes")
+    .select("id")
+    .eq("prayer_id", prayerId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to check if user liked prayer");
+  }
+
+  return !!data;
+};
+
+export const togglePrayerLike = async (
+  prayerId: string
+): Promise<{ liked: boolean; likeCount: number }> => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+
+  // Check if user already liked
+  const { data: existingLike } = await supabase
+    .from("prayer_likes")
+    .select("id")
+    .eq("prayer_id", prayerId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (existingLike) {
+    // Unlike
+    const { error } = await supabase
+      .from("prayer_likes")
+      .delete()
+      .eq("prayer_id", prayerId)
+      .eq("user_id", userId);
+
+    if (error) {
+      throw new Error(error?.message || "Failed to unlike prayer");
+    }
+  } else {
+    // Like
+    const { error } = await supabase
+      .from("prayer_likes")
+      .insert({ prayer_id: prayerId, user_id: userId });
+
+    if (error) {
+      throw new Error(error?.message || "Failed to like prayer");
+    }
+  }
+
+  // Get updated like count
+  const likeCount = await getPrayerLikes(prayerId);
+  return { liked: !existingLike, likeCount };
+};

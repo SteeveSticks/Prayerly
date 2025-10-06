@@ -1,21 +1,69 @@
 import { useEffect, useState } from "react";
 import { getAllPrayers } from "@/lib/actions/prayerly.actions";
 import PrayerCard from "./PrayerCard";
+import { createClientSupabase } from "@/lib/supabase-client";
 
 const CommunityFeed = () => {
-  const [prayerFeed, setPrayerFeed] = useState<any[]>([]);
+  const [prayerFeed, setPrayerFeed] = useState<
+    Array<{
+      id: string;
+      title: string;
+      content: string;
+      privacy: string;
+      created_at: string;
+    }>
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     loadDashboardData();
+
+    // Set up realtime subscription for prayers
+    const supabase = createClientSupabase();
+    const channel = supabase
+      .channel("prayer_feed")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "prayer",
+        },
+        (payload) => {
+          console.log("New prayer update:", payload);
+          loadDashboardData(); // Refresh feed
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "prayer_likes",
+        },
+        (payload) => {
+          console.log("Like update:", payload);
+          loadDashboardData(); // Refresh to update like counts
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadDashboardData = async () => {
     try {
       const prayers = await getAllPrayers();
-      setPrayerFeed(prayers);
-      console.log(prayers);
+      // Sort by newest first (like Twitter)
+      const sortedPrayers = prayers.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setPrayerFeed(sortedPrayers);
+      console.log(sortedPrayers);
     } catch (error) {
       console.log(error);
     } finally {
@@ -24,39 +72,42 @@ const CommunityFeed = () => {
   };
 
   return (
-    <div>
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-lg">🕊️</span>
-        <h3>Feed (🌍 Community Prayers)</h3>
+    <div className="max-w-2xl mx-auto">
+      {/* Twitter-style Header */}
+      <div className="sticky top-0 bg-background/80 backdrop-blur-sm border-b border-border/50 z-10">
+        <div className="flex items-center gap-3 p-4">
+          <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+            <span className="text-white text-sm font-bold">P</span>
+          </div>
+          <div>
+            <h2 className="font-bold text-lg">Prayerly Feed</h2>
+            <p className="text-sm text-muted-foreground">
+              Community prayers & encouragement
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="space-y-4">
+
+      {/* Feed Content */}
+      <div className="divide-y divide-border/50">
         {loading ? (
-          <div className="flex items-center justify-center text-center py-8 text-muted-foreground">
-            <div role="status">
-              <svg
-                aria-hidden="true"
-                className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill"
-                />
-              </svg>
-              <span className="sr-only">Loading...</span>
+          <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="text-muted-foreground text-sm">
+                Loading prayers...
+              </p>
             </div>
           </div>
         ) : prayerFeed.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>No prayer from community and loved ones yet.</p>
-            <p className="text-sm mt-2">
-              Add some loved ones to see their prayers here.
+          <div className="text-center py-12 px-4">
+            <div className="text-6xl mb-4">🙏</div>
+            <h3 className="text-lg font-semibold mb-2">No prayers yet</h3>
+            <p className="text-muted-foreground mb-4">
+              Be the first to share a prayer with the community
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Your prayers will appear here for others to see and encourage
             </p>
           </div>
         ) : (
@@ -73,9 +124,13 @@ const CommunityFeed = () => {
         )}
       </div>
 
-      <div className="text-center py-4 text-muted-foreground">
-        ⬇️ Scroll for more prayers
-      </div>
+      {/* Footer */}
+      {!loading && prayerFeed.length > 0 && (
+        <div className="text-center py-6 text-muted-foreground text-sm">
+          <p>✨ You&apos;re all caught up! ✨</p>
+          <p className="mt-1">New prayers will appear here automatically</p>
+        </div>
+      )}
     </div>
   );
 };

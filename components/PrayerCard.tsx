@@ -1,8 +1,14 @@
 import { useUser } from "@clerk/nextjs";
-import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  getPrayerLikes,
+  getUserLikedPrayer,
+  togglePrayerLike,
+} from "@/lib/actions/prayerly.actions";
 
 interface PrayerCardProps {
   id: string;
@@ -12,62 +18,140 @@ interface PrayerCardProps {
   created_at: string;
 }
 
-const PrayerCard = ({
-  id,
-  title,
-  content,
-  privacy,
-  created_at,
-}: PrayerCardProps) => {
-  const user = useUser();
+const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
+  const { user } = useUser();
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
 
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
     const date = new Date(dateString);
     const diffMs = now.getTime() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays > 0) return `${diffDays}d ago`;
-    if (diffHours > 0) return `${diffHours}h ago`;
-    return "Just now";
+    if (diffDays > 0) return `${diffDays}d`;
+    if (diffHours > 0) return `${diffHours}h`;
+    if (diffMinutes > 0) return `${diffMinutes}m`;
+    return "now";
+  };
+
+  // Load like data
+  useEffect(() => {
+    const loadLikeData = async () => {
+      try {
+        const [count, liked] = await Promise.all([
+          getPrayerLikes(id),
+          getUserLikedPrayer(id),
+        ]);
+        setLikeCount(count);
+        setIsLiked(liked);
+      } catch (error) {
+        console.error("Failed to load like data:", error);
+      }
+    };
+
+    loadLikeData();
+  }, [id]);
+
+  const handleLike = async () => {
+    if (isLiking) return;
+
+    setIsLiking(true);
+    try {
+      const result = await togglePrayerLike(id);
+      setLikeCount(result.likeCount);
+      setIsLiked(result.liked);
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+    } finally {
+      setIsLiking(false);
+    }
   };
   return (
-    <div>
-      <Card>
-        <CardContent className="">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-primary">
-              {user.user?.fullName || "Unknown"}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              ({"Community"})
-            </span>
-            <span className="text-lg ml-auto">✨</span>
+    <div className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+      <div className="p-4">
+        {/* Header with Avatar and User Info */}
+        <div className="flex items-start gap-3 mb-3">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User"} />
+            <AvatarFallback>
+              {(user?.fullName || "U").slice(0, 1).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold text-sm">
+                {user?.fullName || "Anonymous"}
+              </span>
+              <span className="text-muted-foreground text-sm">
+                @{user?.username || "user"}
+              </span>
+              <span className="text-muted-foreground text-sm">·</span>
+              <span className="text-muted-foreground text-sm">
+                {formatTimeAgo(created_at)}
+              </span>
+              <div className="ml-auto">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreHorizontal size={16} />
+                </Button>
+              </div>
+            </div>
+
+            {/* Prayer Content */}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-base">{title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {content}
+              </p>
+            </div>
           </div>
-          <h4 className="text-sm mb-1">{title}</h4>
-          <p className="text-sm mb-3 text-muted-foreground">
-            &quot;{content}&quot;
-          </p>
+        </div>
 
-          <div className="flex gap-2">
-            <Link href={`prayer/${id}`}>
-              <Button size="sm" variant="outline" className="cursor-pointer">
-                <MessageCircle size={14} className="mr-1" />
-                <span>Let&apos;s Pray</span>
-              </Button>
-            </Link>
-
-            <Button size="sm" variant="outline" className="cursor-pointer">
-              <Heart size={14} className="mr-1" />
-              <span>❤️ Encourage</span>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between max-w-md ml-13">
+          <Link href={`/prayer/${id}`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-3 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+            >
+              <MessageCircle size={16} className="mr-2" />
+              <span className="text-sm">Pray</span>
             </Button>
-          </div>
-          <div className="text-xs text-muted-foreground mt-2">
-            {formatTimeAgo(created_at)}
-          </div>
-        </CardContent>
-      </Card>
+          </Link>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLike}
+            disabled={isLiking}
+            className={`h-8 px-3 ${
+              isLiked
+                ? "text-red-600 hover:bg-red-100 dark:hover:bg-red-900/20"
+                : "hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+            }`}
+          >
+            <Heart
+              size={16}
+              className={`mr-2 ${isLiked ? "fill-current" : ""}`}
+            />
+            <span className="text-sm">{likeCount || ""}</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-3 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+          >
+            <Share2 size={16} className="mr-2" />
+            <span className="text-sm">Share</span>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
