@@ -197,7 +197,7 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
       </div>
 
       {/* Prayer Card */}
-      <div className="px-4 py-4 max-w-md mx-auto">
+      <div className="px-3 py-4 max-w-md mx-auto">
         <PrayerCard
           id={id}
           title={title}

@@ -71,7 +71,7 @@ const MyPrayers = () => {
     }
   };
   return (
-    <div className="pb-20 px-4 max-w-md mx-auto">
+    <div className="pb-20 px-3 max-w-md mx-auto">
       <div className="py-4">
         <div className="flex items-center gap-2 mb-4 ">
           <span className="text-lg">📖</span>

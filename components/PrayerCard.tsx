@@ -1,9 +1,26 @@
 import { useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
-import { Heart, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  MoreHorizontal,
+  DeleteIcon,
+  Trash,
+  UserPen,
+  Podcast,
+} from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   getPrayerLikes,
   getUserLikedPrayer,
@@ -102,9 +119,29 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
                 {formatTimeAgo(created_at)}
               </span>
               <div className="ml-auto">
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreHorizontal size={16} />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <MoreHorizontal size={16} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="flex items-center justify-center gap-2">
+                      <Trash className="text-red-500" />
+                      Delete Prayer
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <UserPen className="text-blue-500" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Podcast className="text-yellow-500" />
+                      Subscription
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
 

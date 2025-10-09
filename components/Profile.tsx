@@ -70,7 +70,7 @@ const Profile = () => {
   ];
 
   return (
-    <div className="pb-20 px-4 max-w-md mx-auto">
+    <div className="pb-20 px-3 max-w-md mx-auto">
       <div className="py-4">
         {/* Profile Header */}
         <Card className="mb-6">
