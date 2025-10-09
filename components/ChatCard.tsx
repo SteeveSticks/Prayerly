@@ -15,6 +15,8 @@ import { createClientSupabase } from "@/lib/supabase-client";
 import { useUser } from "@clerk/nextjs";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
+import { Textarea } from "./ui/textarea";
+import PrayerCard from "./PrayerCard";
 
 interface PrayerCardProps {
   id: string;
@@ -196,6 +198,16 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
 
       {/* Prayer Card */}
       <div className="px-4 py-4 max-w-md mx-auto">
+        <PrayerCard
+          id={id}
+          title={title}
+          content={content}
+          created_at={created_at}
+          privacy={"true"}
+        />
+      </div>
+
+      {/* <div className="px-4 py-4 max-w-md mx-auto">
         <Card>
           <CardContent>
             <div className="flex items-center gap-2 mb-2">
@@ -237,7 +249,7 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {/* Message Input */}
       <form
@@ -247,8 +259,7 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
         }}
         className="flex flex-col sm:flex-row p-4 gap-2 border-t-[1px] border-border pb-10 px-4 max-w-md mx-auto"
       >
-        <Input
-          type="text"
+        <Textarea
           placeholder="Type a message..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
@@ -258,7 +269,7 @@ const ChatCard = ({ id, title, content, created_at }: PrayerCardProps) => {
         <Button
           type="submit"
           disabled={!newMessage.trim() || isReplying}
-          className="mt-4 sm:mt-0 sm:ml-0 text-white max-h-12"
+          className="relative top-6 mt-4 sm:mt-0 sm:ml-0 text-white max-h-12 cursor-pointer"
         >
           {isReplying ? "Replying..." : "Reply"}
         </Button>
