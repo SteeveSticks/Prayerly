@@ -75,18 +75,25 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
       <div className="p-4">
         {/* Header with Avatar and User Info */}
         <div className="flex items-start gap-3 mb-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User"} />
-            <AvatarFallback>
-              {(user?.fullName || "U").slice(0, 1).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <Link href="/profile">
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src={user?.imageUrl}
+                alt={user?.fullName || "User"}
+              />
+              <AvatarFallback>
+                {(user?.fullName || "U").slice(0, 1).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-semibold text-sm">
-                {user?.fullName || "Anonymous"}
-              </span>
+              <Link href="/profile">
+                <span className="font-semibold text-sm hover:text-gray-600">
+                  {user?.fullName || "Anonymous"}
+                </span>
+              </Link>
               <span className="text-muted-foreground text-sm">
                 @{user?.username || "user"}
               </span>
@@ -103,7 +110,9 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
 
             {/* Prayer Content */}
             <div className="space-y-2">
-              <h3 className="font-semibold text-base">{title}</h3>
+              <Link href={`/prayer/${id}`}>
+                <h3 className="font-semibold text-base">{title}</h3>
+              </Link>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 {content}
               </p>
@@ -115,7 +124,7 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
         <div className="flex items-center justify-between max-w-md ml-13">
           <Link href={`/prayer/${id}`}>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               className="h-8 px-3 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
             >
@@ -125,7 +134,7 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
           </Link>
 
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleLike}
             disabled={isLiking}
