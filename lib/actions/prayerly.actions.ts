@@ -307,3 +307,48 @@ export const togglePrayerLike = async (
   const likeCount = await getPrayerLikes(prayerId);
   return { liked: !existingLike, likeCount };
 };
+
+// Prayer CRUD operations
+export const updatePrayer = async (
+  prayerId: string,
+  updates: { title?: string; content?: string; privacy?: string }
+) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+
+  // Ensure only the author can update
+  const { data, error } = await supabase
+    .from("prayer")
+    .update(updates)
+    .eq("id", prayerId)
+    .eq("author", userId)
+    .select();
+
+  if (error) {
+    throw new Error(error?.message || "Failed to update prayer");
+  }
+
+  return data?.[0];
+};
+
+export const deletePrayer = async (prayerId: string) => {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const supabase = createSupabaseClient();
+
+  // Ensure only the author can delete
+  const { error } = await supabase
+    .from("prayer")
+    .delete()
+    .eq("id", prayerId)
+    .eq("author", userId);
+
+  if (error) {
+    throw new Error(error?.message || "Failed to delete prayer");
+  }
+
+  return { success: true } as const;
+};

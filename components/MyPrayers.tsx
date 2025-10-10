@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -8,34 +8,41 @@ import { Edit, Trash2 } from "lucide-react";
 import {
   getPrayerStreak,
   getUserPrayers,
+  deletePrayer,
 } from "@/lib/actions/prayerly.actions";
 import { useUser } from "@clerk/nextjs";
+import EditPrayerModal from "./EditPrayerModal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const MyPrayers = () => {
   const user = useUser();
-  const [prayers, setPrayers] = useState<any[]>([]);
-  const [profile, setProfile] = useState<any>(null);
+  const [prayers, setPrayers] = useState<
+    Array<{
+      id: string;
+      title: string;
+      content: string;
+      privacy: string;
+      created_at: string;
+    }>
+  >([]);
   const [prayerStreak, setPrayerStreak] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const [editingPrayer, setEditingPrayer] = useState<{
+    id: string;
+    title: string;
+    content: string;
+    privacy: string;
+  } | null>(null);
 
-  useEffect(() => {
-    setLoading(true);
-    loadPrayers();
-    if (user.user?.id) {
-      getPrayerStreakValue(user.user.id);
-    }
-  }, []);
-
-  const getPrayerStreakValue = async (userId: string) => {
-    try {
-      const streak = await getPrayerStreak(userId);
-      setPrayerStreak(streak);
-    } catch (error) {
-      console.error("Failed to get prayer streak:", error);
-    }
-  };
-
-  const loadPrayers = async () => {
+  const loadPrayers = useCallback(async () => {
     if (!user.user?.id) {
       console.error("User ID is undefined");
       return;
@@ -48,7 +55,24 @@ const MyPrayers = () => {
     } finally {
       setLoading(false);
     }
+  }, [user.user?.id]);
+
+  const getPrayerStreakValue = async (userId: string) => {
+    try {
+      const streak = await getPrayerStreak(userId);
+      setPrayerStreak(streak);
+    } catch (error) {
+      console.error("Failed to get prayer streak:", error);
+    }
   };
+
+  useEffect(() => {
+    setLoading(true);
+    loadPrayers();
+    if (user.user?.id) {
+      getPrayerStreakValue(user.user.id);
+    }
+  }, [user.user?.id, loadPrayers]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -69,6 +93,30 @@ const MyPrayers = () => {
       default:
         return "Private";
     }
+  };
+
+  const handleEditPrayer = (prayer: {
+    id: string;
+    title: string;
+    content: string;
+    privacy: string;
+  }) => {
+    setEditingPrayer(prayer);
+  };
+
+  const handleDeletePrayer = async (prayerId: string) => {
+    try {
+      await deletePrayer(prayerId);
+      // Refresh the prayers list
+      await loadPrayers();
+    } catch (error) {
+      console.error("Failed to delete prayer:", error);
+    }
+  };
+
+  const handlePrayerUpdated = async () => {
+    // Refresh the prayers list after editing
+    await loadPrayers();
   };
   return (
     <div className="pb-20 px-3 max-w-md mx-auto">
@@ -134,14 +182,48 @@ const MyPrayers = () => {
                   </p>
 
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Edit size={14} className="mr-1" />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="cursor-pointer"
+                      onClick={() => handleEditPrayer(prayer)}
+                    >
+                      <Edit size={14} className="mr-1 cursor-pointer" />
                       Edit
                     </Button>
-                    <Button size="sm" variant="outline">
-                      <Trash2 size={14} className="mr-1" />
-                      Delete
-                    </Button>
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                        >
+                          <Trash2 size={14} className="mr-1" />
+                          Delete
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Delete Prayer</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to delete this prayer? This
+                            action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button variant="outline" className="cursor-pointer">
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={() => handleDeletePrayer(prayer.id)}
+                            className="bg-red-600 hover:bg-red-700 cursor-pointer"
+                          >
+                            Delete
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </CardContent>
               </Card>
@@ -153,6 +235,15 @@ const MyPrayers = () => {
           ⬇️ Scroll to see past prayers...
         </div>
       </div>
+
+      {/* Edit Prayer Modal */}
+      {editingPrayer && (
+        <EditPrayerModal
+          prayer={editingPrayer}
+          onClose={() => setEditingPrayer(null)}
+          onSave={handlePrayerUpdated}
+        />
+      )}
     </div>
   );
 };

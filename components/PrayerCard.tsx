@@ -5,7 +5,6 @@ import {
   MessageCircle,
   Share2,
   MoreHorizontal,
-  DeleteIcon,
   Trash,
   UserPen,
   Podcast,
@@ -120,11 +119,12 @@ const PrayerCard = ({ id, title, content, created_at }: PrayerCardProps) => {
               </span>
               <div className="ml-auto">
                 <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <DropdownMenuTrigger>
                       <MoreHorizontal size={16} />
-                    </Button>
-                  </DropdownMenuTrigger>
+                    </DropdownMenuTrigger>
+                  </Button>
+
                   <DropdownMenuContent>
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
